@@ -46,6 +46,7 @@ SPF отвечает на вопрос:
 ```
 SPF/
 ├── README.md              # Этот файл
+├── ontology.md            # Базовая онтология SPF (SPF.SPEC.002)
 ├── REPO-TYPE.md           # Тип репозитория
 ├── docs/                  # Концептуальная документация
 │   └── conceptual-model.md
@@ -69,8 +70,7 @@ SPF/
 │   ├── downstream-contract.md
 │   ├── f-g-r-trust.md        # FPF B.3 — опциональный паттерн
 │   ├── human-guides.md
-│   ├── SPF.SPEC.001-entity-coding.md
-│   └── SPF.SPEC.002-ontology.md
+│   └── SPF.SPEC.001-entity-coding.md
 └── pack-template/         # Шаблон структуры pack
     ├── 00-pack-manifest.md
     ├── 01-domain-contract/  # + 01C-ontology.md (SPF.SPEC.002)
