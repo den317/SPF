@@ -1,140 +1,222 @@
-# IDs and References Specification
+---
+id: SPF.SPEC.001
+name: Правило кодирования сущностей
+status: draft
+created: 2026-02-10
+---
 
-This document specifies the ID scheme and reference format for SPF Personal.
+# Правило кодирования сущностей
+
+> Спецификация SPF: как идентифицировать и кодировать сущности во всех Pack и в самом SPF.
 
 ---
 
-## ID Structure
+## Основание (FPF)
 
-All identifiable items in SPF follow this pattern:
+### Объект ≠ Описание ≠ Носитель
 
-```
-<DOMAIN>.<TYPE>.<NUMBER>
-```
+FPF (A.7 Strict Distinction) требует различать:
 
-### Components
+| Уровень | Что это | Пример |
+|---------|---------|--------|
+| **Объект** | Вещь в реальности | Метод извлечения знаний (capability) |
+| **Описание** | Эпистема о вещи (U.Episteme) | Карточка метода в Pack |
+| **Носитель** | Физический/цифровой медиум (U.SymbolCarrier) | Файл `DP.M.001-knowledge-extraction.md` |
 
-| Component | Description | Examples |
-|-----------|-------------|----------|
-| DOMAIN | Domain code (2-4 chars) | `PD` (Personal Development) |
-| TYPE | Item type code | `M`, `WP`, `FM`, `SOTA`, `MAP` |
-| NUMBER | Sequential number (3 digits) | `001`, `002`, `042` |
-
-### Type Codes
-
-| Code | Full Name | Example |
-|------|-----------|---------|
-| `M` | Method | `PD.M.001` |
-| `WP` | Work Product | `PD.WP.001` |
-| `FM` | Failure Mode | `PD.FM.001` |
-| `SOTA` | SoTA Annotation | `PD.SOTA.001` |
-| `MAP` | Map | `PD.MAP.001` |
-| `D` | Distinction | `PD.D.001` (if individually IDed) |
-| `R` | Role | `PD.R.001` (if individually IDed) |
+**Pack содержит описания сущностей домена на носителях (файлах .md).** Код указывает, что именно описывается, а не уровень описания.
 
 ---
 
-## ID Assignment Rules
+## Терминология
 
-1. **Sequential**: Numbers assigned in order of creation
-2. **No reuse**: Deleted/deprecated items keep their IDs forever
-3. **No gaps required**: `001, 002, 005` is valid (003, 004 may be deprecated)
-4. **Immutable**: Once assigned, an ID never changes
+### Виды сущностей
+
+SPF определяет **базовые виды** — они могут появиться в любом домене.
+
+| Вид | EN | Определение | ≠ (что это НЕ) |
+|-----|----|-----------------------|-----------------|
+| **Метод** | Method | Описание способности (capability) производить рабочий продукт | ≠ сценарий (пошаговая инструкция), ≠ инструмент, ≠ выполнение (work) |
+| **Рабочий продукт** | Work Product | Наблюдаемый результат применения метода; существует на носителе | ≠ описание метода, ≠ навык |
+| **Режим ошибки** | Failure Mode | Типичное нарушение метода или рабочего продукта с наблюдаемыми симптомами | ≠ баг в коде, ≠ риск (вероятность) |
+| **Различение** | Distinction | Концептуальная граница, нарушение которой создаёт неустранимую путаницу | ≠ факт, ≠ определение |
+| **Роль** | Role | Контекстная функция (маска) в bounded context | ≠ должность, ≠ человек, ≠ поведение |
+| **Характеристика** | Characteristic | Измеримая ось оценки сущности | ≠ метрика (измерение), ≠ индикатор (наблюдаемый знак) |
+| **SoTA-аннотация** | SoTA Annotation | Статус актуальности утверждения + критерий пересмотра | ≠ литобзор |
+| **Карта** | Map | Навигационная структура связей между сущностями | = структурный артефакт, ≠ контент |
+
+### Доменные сущности
+
+Pack может содержать сущности, специфичные для своего bounded context. Для них Pack определяет **расширенные виды** и регистрирует их в манифесте (`00-pack-manifest.md`).
+
+### Различение: вид ≠ характеристика
+
+- **Вид** — категория сущности (к чему она принадлежит): метод, роль, рабочий продукт.
+- **Характеристика** — измеримая ось (чем сущность оценивается): сложность, зрелость, актуальность.
+
+Вид отвечает на вопрос «что это?». Характеристика — на вопрос «какое оно?».
 
 ---
 
-## File Naming Convention
+## Правило кодирования
 
-Files containing IDed items should be named after the ID:
+### Формат кода
+
+Все идентифицируемые сущности кодируются по единому правилу:
 
 ```
-/pack/personal-development/03-methods/PD.M.001.md
-/pack/personal-development/04-work-products/PD.WP.001.md
-/pack/personal-development/05-failure-modes/PD.FM.001.md
+<КОНТЕКСТ>.<ВИД>.<НОМЕР>
+```
+
+| Сегмент | Формат | Определение |
+|---------|--------|-------------|
+| КОНТЕКСТ | 2–4 заглавные лат. буквы | Мнемоника bounded context (FPF: U.BoundedContext) — семантическая рамка со своим словарём, ролями и инвариантами |
+| ВИД | 1–6 заглавных лат. букв | Код вида сущности. Базовые — из SPF; расширенные — из Pack |
+| НОМЕР | 3 цифры | Последовательная нумерация внутри контекст + вид |
+
+### Свойства кода
+
+1. **Иммутабельность** — код не меняется после назначения
+2. **Уникальность** — один код = одна сущность, навсегда
+3. **Без переиспользования** — удалённые/устаревшие сущности сохраняют свой код
+4. **Последовательность** — номера назначаются по порядку создания
+5. **Пропуски допустимы** — `001, 002, 005` валидно (003, 004 могут быть устаревшими)
+
+---
+
+## Коды видов
+
+### Базовые виды (определяет SPF, доступны всем Pack)
+
+| Код | Вид | Папка в Pack |
+|-----|-----|-------------|
+| `M` | Method | `03-methods/` |
+| `WP` | Work Product | `04-work-products/` |
+| `FM` | Failure Mode | `05-failure-modes/` |
+| `D` | Distinction | `01-domain-contract/` |
+| `R` | Role | `02-domain-entities/` |
+| `CHR` | Characteristic | `02-domain-entities/` |
+| `SOTA` | SoTA Annotation | `06-sota/` |
+| `MAP` | Map | `07-map/` |
+
+### Расширенные виды (определяет конкретный Pack)
+
+Pack может определить дополнительные виды для своих доменных сущностей. Они:
+
+- Регистрируются в манифесте Pack (`00-pack-manifest.md`)
+- Размещаются в `02-domain-entities/`
+- Код: 1–6 заглавных лат. букв, уникальный в рамках Pack
+
+### Виды SPF (для самого framework)
+
+| Код | Вид | Описание |
+|-----|-----|----------|
+| `SPEC` | Specification | Нормативная спецификация (правило) |
+| `TPL` | Template | Шаблон структуры |
+| `D` | Distinction | Различение (общее для всех Pack) |
+| `MAP` | Map | Навигационная карта SPF |
+
+---
+
+## Уровни и кодирование
+
+| Уровень | Кодирует себя? | Формат | Создаёт новые коды? |
+|---------|---------------|--------|---------------------|
+| **FPF** | Да | `U.*` (собственный формат) | Да (мета-уровень) |
+| **SPF** | Да | `SPF.ВИД.НОМЕР` | Да (правила формы) |
+| **Pack** | Да | `КОНТЕКСТ.ВИД.НОМЕР` | Да (знания домена) |
+| **Downstream** | Нет | Ссылается на коды Pack | Нет |
+
+---
+
+## Реестр контекстов
+
+| Код | Контекст | Уровень | Репо |
+|-----|----------|---------|------|
+| `SPF` | Second Principles Framework | Framework | SPF/ |
+| `PD` | Personal Development | Pack | spf-personal-pack/ |
+| `DP` | Digital Platform | Pack | spf-digital-platform-pack/ |
+| `EC` | Ecosystem | Pack | spf-ecosystem-pack/ |
+
+Требования к новому коду контекста:
+
+- 2–4 заглавные латинские буквы
+- Мнемоника bounded context
+- Уникальный глобально (в этом реестре)
+
+---
+
+## Имя файла
+
+```
+<КОД>-<slug>.md
+```
+
+- **Код** — полный код сущности
+- **Slug** — латиница, kebab-case, без повтора номера
+
+Примеры:
+
+```
+SPF.SPEC.001-entity-coding.md
+DP.M.001-knowledge-extraction.md
+DP.AISYS.013-knowledge-extractor.md
+EC.R.001-mentor.md
 ```
 
 ---
 
-## Reference Syntax
+## Ссылки
 
-### Within SPF (Markdown links)
+### Внутри одного Pack
 
 ```markdown
-See method [PD.M.001](../03-methods/PD.M.001.md)
-Related work product: [PD.WP.003](../04-work-products/PD.WP.003.md)
+См. [DP.M.001](../03-methods/DP.M.001-knowledge-extraction.md)
 ```
 
-### In YAML Frontmatter
+### Кросс-Pack ссылки
+
+```markdown
+См. [DP.M.001](https://github.com/.../03-methods/DP.M.001-knowledge-extraction.md)
+```
+
+С версией:
+
+```markdown
+См. [DP.M.001@v1.0.0](https://github.com/...@v1.0.0/.../DP.M.001-knowledge-extraction.md)
+```
+
+### Ссылки на FPF
+
+```markdown
+По FPF, метод ≠ инструмент (см. FPF A.7, Strict Distinction).
+```
+
+### В YAML Frontmatter
 
 ```yaml
 ---
-id: PD.M.001
-related_methods:
-  - PD.M.002
-  - PD.M.005
-produces:
-  - PD.WP.001
-failure_modes:
-  - PD.FM.003
+id: DP.M.001
+name: Извлечение знаний
+status: active
+created: 2026-02-10
+related:
+  - DP.WP.001
+  - DP.FM.002
 ---
-```
-
-### In Prose
-
-```markdown
-The method PD.M.001 (Strategic Planning) produces work product PD.WP.001 (Strategy Document).
 ```
 
 ---
 
-## Domain Codes Registry
+## Валидация
 
-| Code | Domain | Repository |
-|------|--------|------------|
-| `PD` | Personal Development | spf-personal |
-| _TBD_ | _Future domains_ | _Future repos_ |
+Коды валидируются на:
 
-New domain codes should be:
-- 2-4 uppercase letters
-- Mnemonic for the domain
-- Unique across all SPF repos
+- [ ] Формат: `КОНТЕКСТ.ВИД.NNN`
+- [ ] Уникальность внутри репо
+- [ ] Файл существует по ожидаемому пути
+- [ ] Все ссылки разрешаются
+- [ ] Расширенные виды зарегистрированы в манифесте Pack
 
 ---
 
-## Cross-Domain References
-
-When referencing items from another SPF pack:
-
-```markdown
-See [MGMT.M.005](https://github.com/aisystant/spf-management/blob/main/pack/management/03-methods/MGMT.M.005.md)
-```
-
-Or with version:
-
-```markdown
-See [MGMT.M.005@v1.2.0](https://github.com/aisystant/spf-management/blob/v1.2.0/pack/management/03-methods/MGMT.M.005.md)
-```
-
----
-
-## FPF References
-
-When referencing FPF distinctions:
-
-```markdown
-Per FPF, a "method" is distinct from a "tool" (see FPF:distinction/method-vs-tool).
-```
-
-Exact syntax TBD when FPF repo is established.
-
----
-
-## Validation
-
-IDs should be validated for:
-- [ ] Correct format (`<DOMAIN>.<TYPE>.<NNN>`)
-- [ ] Uniqueness within repo
-- [ ] File exists at expected path
-- [ ] All references resolve
-
-Future tooling may automate this validation.
+*Этот документ: `SPF.SPEC.001`*
