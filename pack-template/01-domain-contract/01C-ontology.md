@@ -2,35 +2,38 @@
 
 > Domain ontology per SPF.SPEC.002.
 > Complete registry of entity types, key terms, and relationships for this Pack.
+> Each concept MUST link to a parent concept from SPF base ontology (SPF.SPEC.002, Section 2).
 
 ---
 
 ## 1. Entity Types
 
 > All entity types used in this Pack: base (from SPF) + extended (defined by this Pack).
+> **Mandatory column "FPF/SPF Concept"** — parent concept from SPF base ontology.
 
-| Code | Type | EN | Definition | ≠ (what it is NOT) | Source |
-|------|------|----|------------|---------------------|--------|
-| `M` | Method | Method | _TBD_ | ≠ scenario, ≠ tool | SPF (base) |
-| `WP` | Work Product | Work Product | _TBD_ | ≠ method description | SPF (base) |
-| `FM` | Failure Mode | Failure Mode | _TBD_ | ≠ code bug | SPF (base) |
-| `D` | Distinction | Distinction | _TBD_ | ≠ fact, ≠ definition | SPF (base) |
-| `R` | Role | Role | _TBD_ | ≠ person, ≠ job title | SPF (base) |
-| `CHR` | Characteristic | Characteristic | _TBD_ | ≠ metric, ≠ indicator | SPF (base) |
-| `SOTA` | SoTA Annotation | SoTA Annotation | _TBD_ | ≠ literature review | SPF (base) |
-| `MAP` | Map | Map | _TBD_ | ≠ content | SPF (base) |
-| _`EXT`_ | _Extended Type_ | _Extended Type_ | _TBD_ | _TBD_ | Pack (extended) |
+| Code | Type | FPF/SPF Concept | Definition | ≠ (what it is NOT) | Source |
+|------|------|-----------------|------------|---------------------|--------|
+| `M` | Method | U.Method | _TBD_ | ≠ scenario, ≠ tool | SPF (base) |
+| `WP` | Work Product | U.Work + U.Episteme | _TBD_ | ≠ method description | SPF (base) |
+| `FM` | Failure Mode | — (SPF-specific) | _TBD_ | ≠ code bug | SPF (base) |
+| `D` | Distinction | A.7 Strict Distinction | _TBD_ | ≠ fact, ≠ definition | SPF (base) |
+| `R` | Role | U.RoleAssignment | _TBD_ | ≠ person, ≠ job title | SPF (base) |
+| `CHR` | Characteristic | U.Characteristic | _TBD_ | ≠ metric, ≠ indicator | SPF (base) |
+| `SOTA` | SoTA Annotation | — (SPF-specific) | _TBD_ | ≠ literature review | SPF (base) |
+| `MAP` | Map | U.Episteme | _TBD_ | ≠ content | SPF (base) |
+| _`EXT`_ | _Extended Type_ | _{U.* concept}_ | _TBD_ | _TBD_ | Pack (extended) |
 
 ---
 
 ## 2. Domain Glossary
 
 > Key domain terms with definitions. Only terms essential for understanding this domain.
+> **Mandatory column "Parent Concept (SPF)"** — which universal concept from SPF base ontology this term belongs to.
 
-| Term | Definition | Related entity |
-|------|-----------|----------------|
-| _Term 1_ | _Definition (1-2 sentences)_ | _DOMAIN.XXX.NNN_ |
-| _Term 2_ | _Definition_ | — |
+| Term | Definition | Parent Concept (SPF) | Related entity |
+|------|-----------|---------------------|----------------|
+| _Term 1_ | _Definition (1-2 sentences)_ | _U.System / U.Method / ..._ | _DOMAIN.XXX.NNN_ |
+| _Term 2_ | _Definition_ | _U.*_ | — |
 
 ---
 
