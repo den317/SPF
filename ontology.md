@@ -219,10 +219,36 @@ Downstream **может** вводить собственные понятия, 
 | Downstream | Ссылается на Pack + собственные реализационные | Реализационные, привязанные к Pack |
 
 10. **Каскадирование.** При изменении ontology.md на верхнем уровне — проверить и обновить нижние (SPF → Pack → Downstream)
+11. **Двуязычность (DDD UL).** Глоссарий домена (§2 в Pack, §2 в downstream) обязан содержать столбцы Term (RU) и Term (EN). EN используется в коде, файлах, git. RU — в документах и дискурсе
+12. **Аббревиатуры.** Каждый ontology.md содержит секцию Abbreviations. Аббревиатуры наследуются сверху вниз (FPF/SPF → Pack → Downstream) с указанием уровня происхождения
 
 ---
 
-## 6. Связь с другими спецификациями
+## 6. Аббревиатуры (FPF/SPF уровень)
+
+> Аббревиатуры, определённые на уровне FPF и SPF. Pack'и наследуют их и добавляют свои.
+
+| Аббревиатура | Расшифровка (RU) | Full form (EN) | Уровень |
+|-------------|-----------------|----------------|---------|
+| FPF | Фреймворк первых принципов | First Principles Framework | FPF |
+| SPF | Фреймворк вторых принципов | Second Principles Framework | SPF |
+| UL | Единый язык | Ubiquitous Language | FPF (DDD) |
+| BC | Ограниченный контекст | Bounded Context | FPF (DDD) |
+| UTS | Единая система терминов | Unified Terminology System | FPF |
+| SoTA | Уровень современности | State of the Art | SPF |
+| KE | Экстракция знаний | Knowledge Extraction | SPF |
+| FM | Режим ошибки | Failure Mode | SPF |
+| WP | Рабочий продукт | Work Product | SPF |
+| M | Метод | Method | SPF |
+| D | Различение | Distinction | SPF |
+| R | Роль | Role | SPF |
+| CHR | Характеристика | Characteristic | SPF |
+| MAP | Карта | Map | SPF |
+| IPO | Вход-Обработка-Выход | Input-Processing-Output | SPF |
+
+---
+
+## 7. Связь с другими спецификациями
 
 | Спецификация | Связь |
 |-------------|-------|

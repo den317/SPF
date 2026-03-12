@@ -28,12 +28,13 @@
 ## 2. Domain Glossary
 
 > Key domain terms with definitions. Only terms essential for understanding this domain.
+> **Mandatory columns:** "Term (RU)" + "Term (EN)" per DDD Ubiquitous Language (SPF.SPEC.002, Rule 11).
 > **Mandatory column "Parent Concept (SPF)"** — which universal concept from SPF base ontology this term belongs to.
 
-| Term | Definition | Parent Concept (SPF) | Related entity |
-|------|-----------|---------------------|----------------|
-| _Term 1_ | _Definition (1-2 sentences)_ | _U.System / U.Method / ..._ | _DOMAIN.XXX.NNN_ |
-| _Term 2_ | _Definition_ | _U.*_ | — |
+| Term (RU) | Term (EN) | Definition | Parent Concept (SPF) | Related entity |
+|-----------|-----------|-----------|---------------------|----------------|
+| _Термин 1_ | _Term 1_ | _Definition (1-2 sentences)_ | _U.System / U.Method / ..._ | _DOMAIN.XXX.NNN_ |
+| _Термин 2_ | _Term 2_ | _Definition_ | _U.*_ | — |
 
 ---
 
@@ -68,6 +69,16 @@ Base Type
 | This Pack's term | Related Pack | Term there |
 |-----------------|-------------|------------|
 | _Term_ | _Pack ID_ | _Term/entity_ |
+
+---
+
+## 6. Abbreviations
+
+> Abbreviations used in this Pack. Inherited abbreviations from upstream (SPF, FPF) are marked accordingly.
+
+| Abbreviation | Full form (RU) | Full form (EN) | Level |
+|-------------|---------------|----------------|-------|
+| _ABR_ | _Расшифровка_ | _Full form_ | _SPF / Pack_ |
 
 ---
 
