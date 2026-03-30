@@ -5,344 +5,344 @@ created: 2026-02-10
 updated: 2026-02-10
 ---
 
-# DDD и FPF/SPF/Pack: полный маппинг
+# DDD and FPF/SPF/Pack: Full Mapping
 
-> **Цель:** Формализовать знание о том, как методология FPF→SPF→Pack→Downstream соотносится с Domain-Driven Design. Что DDD делает, что отвергает, какие плюсы и минусы у обоих подходов, и как идеи DDD живут в нашей архитектуре.
+> **Purpose:** Formalize knowledge of how the FPF→SPF→Pack→Downstream methodology relates to Domain-Driven Design. What DDD does, what it rejects, the pros and cons of both approaches, and how DDD ideas live in our architecture.
 >
-> **Краткая версия:** [fpf-spf-pack.md § 14.1](docs/fpf-spf-pack.md)
-> **Downstream:** пост для клуба — [DS-Knowledge-Index-Tseren/posts/2026-02-10-ddd-vs-fpf-spf-pack.md](https://github.com/TserenTserenov/DS-Knowledge-Index-Tseren/blob/main/posts/2026-02-10-ddd-vs-fpf-spf-pack.md)
+> **Short version:** [fpf-spf-pack.md § 14.1](docs/fpf-spf-pack.md)
+> **Downstream:** club post — [DS-Knowledge-Index-Tseren/posts/2026-02-10-ddd-vs-fpf-spf-pack.md](https://github.com/TserenTserenov/DS-Knowledge-Index-Tseren/blob/main/posts/2026-02-10-ddd-vs-fpf-spf-pack.md)
 
 ---
 
-## 1. Что такое DDD
+## 1. What DDD is
 
-**Domain-Driven Design** (предметно-ориентированное проектирование) — подход к разработке ПО, предложенный Эриком Эвансом (2003). Ключевая идея:
+**Domain-Driven Design** — a software development approach proposed by Eric Evans (2003). Core idea:
 
-> *«Сердце ПО — в его способности решать проблемы предметной области для пользователя.»*
+> *"The heart of software is its ability to solve domain problems for the user."*
 
-DDD утверждает: сложность софта лежит в домене, а не в технологии. Проектирование должно управляться пониманием домена: глубокое погружение в бизнес, постоянное сотрудничество экспертов и разработчиков, единый язык (Ubiquitous Language) во всех артефактах.
+DDD asserts: software complexity lies in the domain, not the technology. Design must be driven by domain understanding: deep immersion in the business, constant collaboration between experts and developers, a Ubiquitous Language across all artifacts.
 
-### 1.1. Два уровня DDD
+### 1.1. Two levels of DDD
 
-| Уровень | Что делает | Масштаб |
-|---------|-----------|---------|
-| **Strategic DDD** | Как декомпозировать большой домен и как части связаны | Организация, система систем |
-| **Tactical DDD** | Как реализовать доменную модель внутри одного контекста | Один сервис, один модуль |
+| Level | What it does | Scale |
+|-------|-------------|-------|
+| **Strategic DDD** | How to decompose a large domain and how the parts relate | Organization, system of systems |
+| **Tactical DDD** | How to implement a domain model within a single context | One service, one module |
 
-### 1.2. Ключевые книги
+### 1.2. Key books
 
-| Книга | Автор | Год | Фокус |
-|-------|-------|-----|-------|
-| *Domain-Driven Design: Tackling Complexity in the Heart of Software* | Eric Evans | 2003 | Основополагающая «синяя книга» — все паттерны |
-| *DDD Reference* | Eric Evans | 2015 | Сжатый справочник всех паттернов (бесплатный PDF) |
-| *Implementing Domain-Driven Design* | Vaughn Vernon | 2013 | «Красная книга» — практическое руководство |
-| *Domain-Driven Design Distilled* | Vaughn Vernon | 2016 | Краткое введение (170 стр.) |
-
----
-
-## 2. Рабочие продукты DDD
-
-DDD производит артефакты **двух видов**: описания (не-код) и код.
-
-### 2.1. Описательные артефакты (не-код)
-
-Эти артефакты существуют **до** и **независимо** от кода. Команда может провести Event Storming и построить Context Map, не написав ни строчки.
-
-| # | Рабочий продукт | Что это физически | Кто делает |
-|---|-----------------|-------------------|-----------|
-| 1 | **Ubiquitous Language Glossary** | Документ/вики: таблица терминов с определениями | Эксперты + разработчики вместе |
-| 2 | **Bounded Context Definitions** | Документ: граница, внутри — термины и правила | Архитектор + эксперты |
-| 3 | **Context Map** | Диаграмма: все контексты и связи между ними | Архитектор |
-| 4 | **Subdomain Classification** | Таблица: Core / Supporting / Generic | Стратег/архитектор |
-| 5 | **Domain Vision Statement** | 1 страница: зачем этот домен, в чём ценность | Продакт + эксперт |
-| 6 | **Event Storming Board** | Стикеры/Miro: события → команды → агрегаты → политики | Вся команда |
-
-### 2.2. Кодовые артефакты
-
-| # | Рабочий продукт | Что это | Пример |
-|---|-----------------|---------|--------|
-| 7 | **Entity** | Класс с уникальным ID и жизненным циклом | `class Order(id: OrderId)` |
-| 8 | **Value Object** | Неизменяемый класс без ID, определяется значениями | `class Money(amount, currency)` |
-| 9 | **Aggregate** | Корневой Entity + вложенные объекты с общими инвариантами | `Order` → `OrderLine[]`, доступ только через `Order` |
-| 10 | **Domain Event** | Объект-уведомление: что-то произошло в домене | `class OrderPlaced(orderId, timestamp)` |
-| 11 | **Domain Service** | Операция без состояния, не принадлежит одной сущности | `PricingService.calculate(order, discounts)` |
-| 12 | **Repository** | Абстракция хранения/извлечения агрегатов | `OrderRepository { find(id), save(order) }` |
-| 13 | **Factory** | Инкапсуляция сложного создания объектов | `OrderFactory.createFromCart(cart)` |
-| 14 | **Layered Architecture** | Структура: UI → Application → Domain → Infrastructure | 4 слоя, зависимости только вниз |
-
-### 2.3. Важное уточнение: описания в DDD служат коду
-
-В DDD описательные артефакты — **промежуточные**:
-- Glossary нужен, чтобы классы назывались правильно
-- Context Map — чтобы микросервисы были нарезаны правильно
-- Event Storming — чтобы найти агрегаты для кода
-
-Конечная цель всех описаний в DDD — **код**. Это осознанное решение Эванса (см. §3).
+| Book | Author | Year | Focus |
+|------|--------|------|-------|
+| *Domain-Driven Design: Tackling Complexity in the Heart of Software* | Eric Evans | 2003 | Foundational "blue book" — all patterns |
+| *DDD Reference* | Eric Evans | 2015 | Condensed reference for all patterns (free PDF) |
+| *Implementing Domain-Driven Design* | Vaughn Vernon | 2013 | "Red book" — practical guide |
+| *Domain-Driven Design Distilled* | Vaughn Vernon | 2016 | Brief introduction (170 p.) |
 
 ---
 
-## 3. Позиция Эванса: «Модель — это код»
+## 2. DDD work products
 
-### 3.1. Что Эванс отвергает
+DDD produces artifacts of **two kinds**: descriptions (non-code) and code.
 
-Эванс явно выступает против «модели на полке» — документа, который пишется аналитиками, передаётся разработчикам и дальше живёт отдельно от кода.
+### 2.1. Descriptive artifacts (non-code)
 
-> *«The model is not the diagram. The model is not the document. The model IS the code.»*
+These artifacts exist **before** and **independently of** code. A team can run Event Storming and build a Context Map without writing a single line.
 
-### 3.2. Аргументы Эванса
+| # | Work product | What it is physically | Who does it |
+|---|-------------|----------------------|-------------|
+| 1 | **Ubiquitous Language Glossary** | Document/wiki: table of terms with definitions | Experts + developers together |
+| 2 | **Bounded Context Definitions** | Document: boundary, inside — terms and rules | Architect + experts |
+| 3 | **Context Map** | Diagram: all contexts and connections between them | Architect |
+| 4 | **Subdomain Classification** | Table: Core / Supporting / Generic | Strategist/architect |
+| 5 | **Domain Vision Statement** | 1 page: why this domain, where the value lies | Product + expert |
+| 6 | **Event Storming Board** | Stickers/Miro: events → commands → aggregates → policies | Whole team |
 
-| Аргумент | Суть |
-|----------|------|
-| **Модель = код** | Доменная модель материализуется непосредственно в коде доменного слоя. Агрегаты, сущности, Value Objects, доменные события — всё это и есть «формализация» |
-| **UL — устный, не документный** | Единый язык поддерживается через постоянное общение, парное программирование, обсуждения. Глоссарий — вспомогательный, а не центральный артефакт |
-| **Context Map — неформальна** | Может быть рисунком на доске, диаграммой в вики. Строгого формата DDD не предписывает |
-| **Документ неизбежно устаревает** | Любой документ, оторванный от кода, рано или поздно расходится с реальностью. Лучше сделать код настолько выразительным, чтобы он сам был читаемой моделью |
+### 2.2. Code artifacts
 
-### 3.3. Логика этой позиции
+| # | Work product | What it is | Example |
+|---|-------------|-----------|---------|
+| 7 | **Entity** | Class with unique ID and lifecycle | `class Order(id: OrderId)` |
+| 8 | **Value Object** | Immutable class without ID, defined by values | `class Money(amount, currency)` |
+| 9 | **Aggregate** | Root Entity + nested objects with shared invariants | `Order` → `OrderLine[]`, accessed only through `Order` |
+| 10 | **Domain Event** | Notification object: something happened in the domain | `class OrderPlaced(orderId, timestamp)` |
+| 11 | **Domain Service** | Stateless operation, does not belong to one entity | `PricingService.calculate(order, discounts)` |
+| 12 | **Repository** | Abstraction for storing/retrieving aggregates | `OrderRepository { find(id), save(order) }` |
+| 13 | **Factory** | Encapsulation of complex object creation | `OrderFactory.createFromCart(cart)` |
+| 14 | **Layered Architecture** | Structure: UI → Application → Domain → Infrastructure | 4 layers, dependencies only downward |
 
-Эванс решает конкретную проблему: в 2003 году типичный проект выглядел так:
-1. Аналитик пишет документ с требованиями
-2. Архитектор рисует диаграммы
-3. Разработчик пишет код, который не соответствует ни тому, ни другому
-4. Документы устаревают на следующий день
+### 2.3. Important clarification: descriptions in DDD serve code
 
-DDD говорит: **выбросьте промежуточные документы, сделайте код моделью**.
+In DDD descriptive artifacts are **intermediate**:
+- Glossary is needed so classes are named correctly
+- Context Map — so microservices are sliced correctly
+- Event Storming — to find aggregates for code
 
----
-
-## 4. Плюсы и минусы подхода DDD
-
-### 4.1. Плюсы
-
-| Плюс | Почему это ценно |
-|------|-----------------|
-| **Код = модель → нет рассинхронизации** | Единственный source-of-truth (код) не может устареть сам относительно себя |
-| **Глубокое понимание домена** | Knowledge crunching заставляет разработчиков разбираться в бизнесе |
-| **Выразительный код** | Intention-revealing interfaces, ubiquitous language в именах классов — код читается как описание домена |
-| **Bounded Context** | Чёткие границы предотвращают «Big Ball of Mud» — модульность на архитектурном уровне |
-| **Богатая таксономия интеграции** | 9 паттернов Context Map (Partnership, ACL, Conformist...) — точные инструменты для описания связей |
-
-### 4.2. Минусы
-
-| Минус | Последствия |
-|-------|-----------|
-| **Знание заперто в коде** | Бизнес-эксперт, который не читает код, не может валидировать модель самостоятельно. UL работает только пока команда регулярно общается |
-| **Нет передачи знания без людей** | Уходит ключевой разработчик/эксперт — знание о *почему* модель устроена именно так теряется. Код показывает *что*, но не *почему* |
-| **Нет формальной верификации** | Нельзя проверить, что код соответствует доменным правилам, потому что эти правила нигде не зафиксированы отдельно от кода в структурированной форме |
-| **Масштабирование через людей, а не артефакты** | DDD хорошо работает в одной команде с живым общением. Когда команд становится много, устный UL перестаёт масштабироваться |
-| **Смешение домена и реализации** | Код — реализация на конкретном языке, в конкретном фреймворке, с техническими компромиссами. Доменное знание неизбежно смешивается с решениями реализации |
-| **Нет мета-уровня** | Нет способа формализовать правила создания моделей. Каждая команда изобретает свой подход |
-
-### 4.3. Попытки компенсировать минусы
-
-Были попытки дополнить DDD формальными артефактами, но ни одна не стала стандартом:
-
-| Попытка | Что делает | Почему не решает проблему |
-|---------|-----------|-------------------------|
-| **Event Storming** (Brandolini) | Визуальная карта событий на стикерах | Неформальна, быстро устаревает |
-| **Domain Story Telling** | Визуальные нарративы | Нет строгого формата |
-| **BDD (Given-When-Then)** | Исполняемые спецификации | Привязаны к тестовому фреймворку |
-| **ADR** (Architecture Decision Records) | Фиксируют решения | Фиксируют решения, а не модель |
+The ultimate goal of all descriptions in DDD is **code**. This is Evans's deliberate decision (see §3).
 
 ---
 
-## 5. Плюсы и минусы подхода FPF/SPF/Pack
+## 3. Evans's position: "The model is the code"
 
-### 5.1. Плюсы
+### 3.1. What Evans rejects
 
-| Плюс | Почему это ценно |
-|------|-----------------|
-| **Знание — самостоятельный артефакт** | Pack существует и имеет ценность без кода. Доменный эксперт может читать, валидировать и улучшать Pack |
-| **Передача знания через артефакт** | Pack можно передать другой команде, другому проекту, AI-агенту — без устного объяснения |
-| **Формальная верификация** | Distinctions с тестами, failure modes, trust metrics — структурированные способы проверки корректности |
-| **Масштабирование через Pack** | Новая команда читает Pack и получает формализованное знание домена. Не нужен ментор-человек |
-| **Мета-уровни** | FPF → SPF обеспечивают переносимость паттернов между доменами. Правила создания Pack'ов одинаковы для любого домена |
-| **Явное отслеживание эволюции** | SoTA + revision criteria показывают когда знание устарело. В DDD модель рефакторится по необходимости, без системы |
-| **Downstream contract** | Явный интерфейс между знанием и применением. Код, курсы, агенты — всё использует один Pack |
+Evans explicitly opposes the "model on the shelf" — a document written by analysts, handed to developers, and thereafter living separately from code.
 
-### 5.2. Минусы
+> *"The model is not the diagram. The model is not the document. The model IS the code."*
 
-| Минус | Последствия |
-|-------|-----------|
-| **Два source-of-truth** | Pack (текст) и Code (downstream) могут рассинхронизироваться — та самая проблема, которую Эванс решал. Требуется явный процесс синхронизации (см. §6) |
-| **Overhead на формализацию** | Создание Pack'а с ID, frontmatter, distinctions, failure modes — значительные затраты. Для маленькой команды может быть избыточно |
-| **Нет runtime-паттернов** | Aggregate, Domain Event, Repository — паттерны организации кода, которых нет в Pack. При переходе к коду нужно дополнительно применять DDD |
-| **Риск «модели на полке»** | Если процесс синхронизации Pack→Code не работает, Pack становится тем самым устаревшим документом, против которого выступал Эванс |
-| **Молодая методология** | Нет широкого community, нет проверки на масштабе, мало tooling |
+### 3.2. Evans's arguments
 
----
+| Argument | Essence |
+|----------|---------|
+| **Model = code** | The domain model materializes directly in the code of the domain layer. Aggregates, entities, Value Objects, domain events — all of this IS the "formalization" |
+| **UL is oral, not documentary** | Ubiquitous Language is maintained through constant communication, pair programming, discussions. The glossary is a supporting, not central, artifact |
+| **Context Map is informal** | May be a drawing on a whiteboard, a diagram in a wiki. DDD prescribes no strict format |
+| **Document inevitably becomes outdated** | Any document disconnected from code will sooner or later diverge from reality. Better to make code so expressive that it itself is a readable model |
 
-## 6. Проблема двух источников истины: Pack vs Code
+### 3.3. The logic of this position
 
-### 6.1. Постановка проблемы
+Evans solves a specific problem: in 2003 a typical project looked like this:
+1. Analyst writes a requirements document
+2. Architect draws diagrams
+3. Developer writes code that matches neither
+4. Documents become outdated the next day
 
-Эванс прав: документ, оторванный от кода, устаревает. Мы принимаем эту проблему, но решаем её иначе.
-
-В DDD решение: **убрать документ, оставить код**.
-В FPF/SPP/Pack решение: **сохранить оба, ввести процесс синхронизации**.
-
-### 6.2. Когда Pack и Code расходятся
-
-Расхождение Pack и Code — нормальная ситуация. Вопрос: **что обновить?**
-
-| Ситуация | Что обновить | Почему |
-|----------|-------------|--------|
-| Обнаружено новое доменное знание при разработке кода | **Pack** (затем Code подтягивается) | Pack — source-of-truth. Знание формализуется в Pack, код следует |
-| Технический компромисс в коде вынуждает отклониться от модели | **Code** (с ADR-записью, почему) | Реализация может требовать компромиссов, но Pack остаётся «идеальной» моделью |
-| Бизнес-эксперт нашёл ошибку в модели | **Pack** (затем Code подтягивается) | Эксперт валидирует Pack напрямую |
-| Код рефакторится и открывает лучшую структуру | **Оба**: Pack уточняется, Code закрепляет | Рефакторинг кода — форма knowledge crunching |
-| AI-агент работает с устаревшим Pack | **Pack** (обновить до текущего понимания) | Агент должен работать с актуальным знанием |
-
-### 6.3. Правило синхронизации
-
-> **При расхождении Pack и Code — не обновляй автоматически одно из двух. Определи, где истина, и обнови то, что ошибается.**
-
-Это отличается от DDD (где код всегда прав) и от традиционного waterfall (где документ всегда прав). Наш подход: **истина определяется анализом**, а не конвенцией.
-
-### 6.4. Механизмы предотвращения рассинхронизации
-
-| Механизм | Как работает | Статус |
-|----------|-------------|--------|
-| **Capture-to-Pack** (протокол Work) | При разработке кода обнаруженное знание фиксируется в Pack | Реализован |
-| **Downstream contract** (SPF spec) | Явный интерфейс Pack→Code с правилами трассировки | Реализован |
-| **SoTA + revision criteria** | Каждая сущность Pack имеет критерий пересмотра | Реализован |
-| **Process lint** | Автоматическая проверка Pack на соответствие SPF | Частично |
-| **Code lint → Pack** | Проверка, что Code ссылается на Pack-сущности | Не реализован (потенциал) |
+DDD says: **throw away the intermediate documents, make the code the model**.
 
 ---
 
-## 7. Как идеи DDD живут в FPF/SPF/Pack
+## 4. Pros and cons of the DDD approach
 
-### 7.1. Идеи, которые мы взяли и обобщили
+### 4.1. Pros
 
-| Идея DDD | Как живёт у нас | Что мы добавили |
-|----------|----------------|----------------|
-| **Bounded Context** | U.BoundedContext (FPF A.1.1) → Pack (SPF) | Обобщение на любой домен (не только код). 4 обязательных компонента: Glossary, Invariants, Roles, Bridges |
-| **Ubiquitous Language** | Glossary + Distinctions (SPF 01A, 01B) | Тесты на нарушение, failure modes, формальные ID |
-| **Knowledge Crunching** | 11-step process (SPF process/) + Capture-to-Pack | Формализованный процесс вместо неформальных воркшопов |
-| **Model-Driven Design** | Pack-driven Downstream | Код генерируется/пишется на основе Pack, а не наоборот |
-| **Явные границы** | Pack Manifest (scope: in/out) + Bridges | upstream/downstream зависимости, loss/fit-аннотации |
+| Pro | Why it is valuable |
+|-----|-------------------|
+| **Code = model → no desync** | The single source-of-truth (code) cannot become outdated relative to itself |
+| **Deep domain understanding** | Knowledge crunching forces developers to understand the business |
+| **Expressive code** | Intention-revealing interfaces, ubiquitous language in class names — code reads like a domain description |
+| **Bounded Context** | Clear boundaries prevent "Big Ball of Mud" — modularity at the architectural level |
+| **Rich integration taxonomy** | 9 Context Map patterns (Partnership, ACL, Conformist...) — precise tools for describing connections |
 
-### 7.2. Идеи, которые мы НЕ взяли (и почему)
+### 4.2. Cons
 
-| Идея DDD | Почему не взяли | Последствие |
-|----------|----------------|------------|
-| **«Модель = код»** | Мы считаем знание самостоятельным артефактом, не привязанным к реализации | Требуется процесс синхронизации (§6) |
-| **Aggregate** (runtime-граница) | Pack — knowledge-time, нет runtime | Нет паттерна «группа сущностей, обновляемых вместе». Потенциально полезно ввести **Knowledge Aggregate** |
-| **Domain Events** (runtime-уведомления) | Pack не исполняется | Нет способа описать «что произошло». Но это и не нужно в knowledge-time |
-| **Value Objects** (неизменяемые, без ID) | Все сущности Pack имеют ID | Некоторые элементы (метрики, характеристики) могли бы быть value objects, но мы не различаем |
-| **Repository** (хранение агрегатов) | Это паттерн реализации | Живёт в downstream/instrument (код) |
+| Con | Consequences |
+|-----|-------------|
+| **Knowledge locked in code** | A business expert who cannot read code cannot independently validate the model. UL works only while the team communicates regularly |
+| **No knowledge transfer without people** | A key developer/expert leaves — knowledge of *why* the model is structured this way is lost. Code shows *what*, but not *why* |
+| **No formal verification** | Cannot check that code matches domain rules because those rules are nowhere fixed separately from code in structured form |
+| **Scaling through people, not artifacts** | DDD works well in one team with live communication. As teams multiply, oral UL stops scaling |
+| **Mixing domain and implementation** | Code is an implementation in a specific language, specific framework, with technical compromises. Domain knowledge inevitably mixes with implementation decisions |
+| **No meta-level** | No way to formalize rules for creating models. Every team invents its own approach |
 
-### 7.3. Идеи, которые мы можем взять
+### 4.3. Attempts to compensate for cons
 
-| Что | Зачем | Куда положить | Приоритет |
-|-----|-------|-------------|-----------|
-| **Context Map Integration Patterns** (9 паттернов) | Расширить типы Bridges: Partnership, ACL, Conformist, Open Host, Shared Kernel, etc. | FPF Bridges или SPF spec | Высокий |
-| **Core/Supporting/Generic** | Приоритизация инвестиций в формализацию Pack'ов | Pack Manifest: поле `subdomain_type` | Средний |
-| **Knowledge Aggregate** | Группы сущностей Pack, которые ДОЛЖНЫ обновляться вместе | SPF process | Средний |
-| **Knowledge Storming** (адаптация Event Storming) | Метод обнаружения сущностей, различений и failure modes | SPF process (steps 3-4) | Низкий |
+There were attempts to supplement DDD with formal artifacts, but none became a standard:
+
+| Attempt | What it does | Why it does not solve the problem |
+|---------|-------------|----------------------------------|
+| **Event Storming** (Brandolini) | Visual event map on stickers | Informal, becomes outdated quickly |
+| **Domain Story Telling** | Visual narratives | No strict format |
+| **BDD (Given-When-Then)** | Executable specifications | Tied to a test framework |
+| **ADR** (Architecture Decision Records) | Records decisions | Records decisions, not the model |
 
 ---
 
-## 8. Сводная таблица: DDD vs FPF/SPF/Pack
+## 5. Pros and cons of the FPF/SPF/Pack approach
 
-### 8.1. По возможностям
+### 5.1. Pros
 
-| Возможность | DDD | FPF/SPF/Pack |
-|-------------|-----|-------------|
-| Формализация знания домена | Через код (runtime) | Через структурированный текст (knowledge-time) |
-| Bounded Context | Да | Да (обобщённый) |
-| Единый язык | UL (устный + в коде) | Glossary + Distinctions (формальный, с тестами) |
-| Паттерны интеграции контекстов | 9 паттернов (ACL, Partnership...) | Bridges (менее развитые) |
-| Мета-уровень | Нет | FPF → SPF (2 мета-уровня) |
-| Runtime-паттерны | Aggregate, Event, Service, Repository | Нет (в downstream) |
-| Failure modes | Нет | Да (SPF 05, первоклассные граждане) |
-| Trust/readiness метрики | Нет | Да (F, G, R) |
-| SoTA отслеживание | Нет | Да (статус + revision criteria) |
-| Downstream contract | Нет | Да (явный интерфейс знание→применение) |
-| Классификация доменов | Core/Supporting/Generic | Нет (можно взять) |
-| Tooling и community | Зрелый (20+ лет) | Молодой |
+| Pro | Why it is valuable |
+|-----|-------------------|
+| **Knowledge as an independent artifact** | Pack exists and has value without code. A domain expert can read, validate and improve Pack |
+| **Knowledge transfer via artifact** | Pack can be handed to another team, another project, an AI agent — without verbal explanation |
+| **Formal verification** | Distinctions with tests, failure modes, trust metrics — structured ways of verifying correctness |
+| **Scaling through Pack** | A new team reads Pack and gets formalized domain knowledge. No human mentor needed |
+| **Meta-levels** | FPF → SPF ensure portability of patterns across domains. Rules for creating Packs are the same for any domain |
+| **Explicit evolution tracking** | SoTA + revision criteria show when knowledge has become outdated. In DDD the model is refactored as needed, without a system |
+| **Downstream contract** | Explicit interface between knowledge and application. Code, courses, agents — all use one Pack |
 
-### 8.2. По source-of-truth
+### 5.2. Cons
 
-| Аспект | DDD | FPF/SPF/Pack |
+| Con | Consequences |
+|-----|-------------|
+| **Two sources of truth** | Pack (text) and Code (downstream) can desync — the very problem Evans was solving. Requires an explicit synchronization process (see §6) |
+| **Formalization overhead** | Creating a Pack with IDs, frontmatter, distinctions, failure modes — significant effort. May be excessive for a small team |
+| **No runtime patterns** | Aggregate, Domain Event, Repository — code organization patterns not in Pack. When transitioning to code, DDD must be additionally applied |
+| **Risk of "model on the shelf"** | If the Pack→Code synchronization process does not work, Pack becomes the very outdated document Evans opposed |
+| **Young methodology** | No wide community, no validation at scale, little tooling |
+
+---
+
+## 6. The two-source-of-truth problem: Pack vs Code
+
+### 6.1. Problem statement
+
+Evans is right: a document disconnected from code becomes outdated. We accept this problem but solve it differently.
+
+In DDD the solution: **remove the document, keep the code**.
+In FPF/SPF/Pack the solution: **keep both, introduce a synchronization process**.
+
+### 6.2. When Pack and Code diverge
+
+Divergence of Pack and Code is a normal situation. The question is: **what to update?**
+
+| Situation | What to update | Why |
+|-----------|---------------|-----|
+| New domain knowledge discovered during code development | **Pack** (then Code follows) | Pack is source-of-truth. Knowledge is formalized in Pack, code follows |
+| Technical compromise in code forces deviation from model | **Code** (with an ADR record of why) | Implementation may require compromises, but Pack remains the "ideal" model |
+| Business expert found an error in the model | **Pack** (then Code follows) | Expert validates Pack directly |
+| Code refactoring reveals a better structure | **Both**: Pack is refined, Code consolidates | Code refactoring is a form of knowledge crunching |
+| AI agent is working with outdated Pack | **Pack** (update to current understanding) | Agent must work with current knowledge |
+
+### 6.3. Synchronization rule
+
+> **When Pack and Code diverge — do not automatically update one of them. Determine where the truth lies and update the one that is wrong.**
+
+This differs from DDD (where code is always right) and from traditional waterfall (where the document is always right). Our approach: **truth is determined by analysis**, not convention.
+
+### 6.4. Mechanisms to prevent desync
+
+| Mechanism | How it works | Status |
+|-----------|-------------|--------|
+| **Capture-to-Pack** (Work protocol) | When developing code, discovered knowledge is recorded in Pack | Implemented |
+| **Downstream contract** (SPF spec) | Explicit Pack→Code interface with traceability rules | Implemented |
+| **SoTA + revision criteria** | Each Pack entity has a revision criterion | Implemented |
+| **Process lint** | Automated check of Pack against SPF | Partial |
+| **Code lint → Pack** | Check that Code references Pack entities | Not implemented (potential) |
+
+---
+
+## 7. How DDD ideas live in FPF/SPF/Pack
+
+### 7.1. Ideas we took and generalized
+
+| DDD idea | How it lives with us | What we added |
+|----------|---------------------|--------------|
+| **Bounded Context** | U.BoundedContext (FPF A.1.1) → Pack (SPF) | Generalization to any domain (not just code). 4 required components: Glossary, Invariants, Roles, Bridges |
+| **Ubiquitous Language** | Glossary + Distinctions (SPF 01A, 01B) | Tests for violations, failure modes, formal IDs |
+| **Knowledge Crunching** | 11-step process (SPF process/) + Capture-to-Pack | Formalized process instead of informal workshops |
+| **Model-Driven Design** | Pack-driven Downstream | Code is generated/written based on Pack, not the reverse |
+| **Explicit boundaries** | Pack Manifest (scope: in/out) + Bridges | upstream/downstream dependencies, loss/fit annotations |
+
+### 7.2. Ideas we did NOT take (and why)
+
+| DDD idea | Why we did not take it | Consequence |
+|----------|----------------------|------------|
+| **"Model = code"** | We treat knowledge as an independent artifact, not tied to implementation | Synchronization process required (§6) |
+| **Aggregate** (runtime boundary) | Pack is knowledge-time, no runtime | No pattern for "a group of entities updated together". Potentially useful to introduce **Knowledge Aggregate** |
+| **Domain Events** (runtime notifications) | Pack is not executed | No way to describe "what happened". But this is not needed at knowledge-time |
+| **Value Objects** (immutable, no ID) | All Pack entities have IDs | Some elements (metrics, characteristics) could be value objects, but we do not distinguish |
+| **Repository** (storing aggregates) | This is an implementation pattern | Lives in downstream/instrument (code) |
+
+### 7.3. Ideas we could take
+
+| What | Why | Where to place | Priority |
+|------|-----|---------------|---------|
+| **Context Map Integration Patterns** (9 patterns) | Extend Bridge types: Partnership, ACL, Conformist, Open Host, Shared Kernel, etc. | FPF Bridges or SPF spec | High |
+| **Core/Supporting/Generic** | Prioritize investment in Pack formalization | Pack Manifest: `subdomain_type` field | Medium |
+| **Knowledge Aggregate** | Groups of Pack entities that MUST be updated together | SPF process | Medium |
+| **Knowledge Storming** (Event Storming adaptation) | Method for discovering entities, distinctions and failure modes | SPF process (steps 3-4) | Low |
+
+---
+
+## 8. Summary table: DDD vs FPF/SPF/Pack
+
+### 8.1. By capabilities
+
+| Capability | DDD | FPF/SPF/Pack |
+|------------|-----|-------------|
+| Domain knowledge formalization | Through code (runtime) | Through structured text (knowledge-time) |
+| Bounded Context | Yes | Yes (generalized) |
+| Ubiquitous language | UL (oral + in code) | Glossary + Distinctions (formal, with tests) |
+| Context integration patterns | 9 patterns (ACL, Partnership...) | Bridges (less developed) |
+| Meta-level | No | FPF → SPF (2 meta-levels) |
+| Runtime patterns | Aggregate, Event, Service, Repository | No (in downstream) |
+| Failure modes | No | Yes (SPF 05, first-class citizens) |
+| Trust/readiness metrics | No | Yes (F, G, R) |
+| SoTA tracking | No | Yes (status + revision criteria) |
+| Downstream contract | No | Yes (explicit knowledge→application interface) |
+| Domain classification | Core/Supporting/Generic | No (can be taken) |
+| Tooling and community | Mature (20+ years) | Young |
+
+### 8.2. By source-of-truth
+
+| Aspect | DDD | FPF/SPF/Pack |
 |--------|-----|-------------|
-| **Source-of-truth** | Код | Pack (текст) |
-| **Если текст ≠ код** | Обнови текст (код прав) | Определи, где истина, и обнови ошибающийся |
-| **Кто валидирует** | Разработчик (читает код) | Эксперт (читает Pack) + разработчик (читает код) |
-| **Масштабирование** | Через людей (общение) | Через артефакт (Pack) |
-| **Риск** | Знание заперто в коде | Рассинхронизация Pack и Code |
+| **Source-of-truth** | Code | Pack (text) |
+| **If text ≠ code** | Update text (code is right) | Determine where truth lies and update the wrong one |
+| **Who validates** | Developer (reads code) | Expert (reads Pack) + developer (reads code) |
+| **Scaling** | Through people (communication) | Through artifact (Pack) |
+| **Risk** | Knowledge locked in code | Desync between Pack and Code |
 
-### 8.3. По рабочим продуктам
+### 8.3. By work products
 
-| DDD-артефакт | Аналог в FPF/SPF/Pack | Совпадение |
-|-------------|----------------------|-----------|
-| Ubiquitous Language Glossary | Glossary + Distinctions | Высокое (наши строже) |
-| Bounded Context Definition | Pack = Bounded Context | Высокое (наши обобщённее) |
-| Context Map | Bridges + Pack Manifest | Среднее (DDD богаче) |
-| Domain Vision Statement | Pack Manifest (scope) | Среднее |
-| Subdomain Classification | — | Нет (можно взять) |
-| Entity | Domain Entity (DP.XXX.NNN) | Среднее |
-| Value Object | — | Нет аналога |
-| Aggregate | — | Нет (→ Knowledge Aggregate) |
-| Domain Event | — | Нет (runtime vs knowledge-time) |
-| Domain Service | Method (SPF 03) | Среднее |
-| Repository | Downstream/instrument | Низкое |
-| Layered Architecture | 4-уровневая иерархия | Аналогия (разные слои) |
+| DDD artifact | FPF/SPF/Pack analog | Match |
+|-------------|--------------------|----|
+| Ubiquitous Language Glossary | Glossary + Distinctions | High (ours are stricter) |
+| Bounded Context Definition | Pack = Bounded Context | High (ours are more general) |
+| Context Map | Bridges + Pack Manifest | Medium (DDD is richer) |
+| Domain Vision Statement | Pack Manifest (scope) | Medium |
+| Subdomain Classification | — | No (can be taken) |
+| Entity | Domain Entity (DP.XXX.NNN) | Medium |
+| Value Object | — | No analog |
+| Aggregate | — | No (→ Knowledge Aggregate) |
+| Domain Event | — | No (runtime vs knowledge-time) |
+| Domain Service | Method (SPF 03) | Medium |
+| Repository | Downstream/instrument | Low |
+| Layered Architecture | 4-level hierarchy | Analogy (different layers) |
 
 ---
 
-## 9. Позиционирование: что мы такое относительно DDD
+## 9. Positioning: what we are relative to DDD
 
-### 9.1. Формулировка
+### 9.1. Formulation
 
-> **FPF/SPF/Pack — это обобщение ключевых паттернов DDD (Bounded Context, Ubiquitous Language, явные границы) за пределы кода, на формализацию доменного знания как самостоятельного артефакта.**
+> **FPF/SPF/Pack is a generalization of key DDD patterns (Bounded Context, Ubiquitous Language, explicit boundaries) beyond code, to the formalization of domain knowledge as an independent artifact.**
 >
-> DDD формализует домен **через код**. Мы формализуем домен **до кода**, в структурированном тексте (Pack), а код является downstream-продуктом Pack'а.
+> DDD formalizes the domain **through code**. We formalize the domain **before code**, in structured text (Pack), and code is a downstream product of Pack.
 >
-> При этом мы добавляем то, чего нет в DDD: мета-уровни (FPF/SPF), failure modes, trust metrics, SoTA, downstream contracts.
+> At the same time we add what DDD lacks: meta-levels (FPF/SPF), failure modes, trust metrics, SoTA, downstream contracts.
 >
-> DDD и FPF/SPF/Pack **не конкурируют — они последовательны**:
+> DDD and FPF/SPF/Pack **do not compete — they are sequential**:
 >
 > ```
-> Домен (реальность)
->     ↓  FPF/SPF/Pack: формализация знания
+> Domain (reality)
+>     ↓  FPF/SPF/Pack: knowledge formalization
 > Pack (source-of-truth)
->     ↓  DDD: проектирование кода на основе знания
-> Код (downstream/instrument)
+>     ↓  DDD: code design based on knowledge
+> Code (downstream/instrument)
 > ```
 
-### 9.2. Можно ли говорить «мы делаем DDD»?
+### 9.2. Can we say "we do DDD"?
 
-**Нет** — это было бы неточно. DDD — про код. Мы — про знание до кода.
+**No** — that would be imprecise. DDD is about code. We are about knowledge before code.
 
-**Да** — можно говорить: «мы используем паттерны DDD (Bounded Context, UL), обобщённые на knowledge management».
+**Yes** — one can say: "we use DDD patterns (Bounded Context, UL), generalized to knowledge management".
 
-**Точнее всего:** «Наш подход включает и расширяет стратегические паттерны DDD, но добавляет самостоятельный артефакт доменного знания (Pack), которого DDD не создаёт».
-
----
-
-## 10. Суть проблемы, которую мы решаем
-
-DDD по факту предлагает: «пусть код будет моделью». Но код — это реализация на конкретном языке, в конкретном фреймворке, с техническими компромиссами. Он неизбежно смешивает доменное знание с решениями реализации.
-
-Полноценный артефакт доменного знания — независимый от реализации, верифицируемый, читаемый и для бизнеса, и для разработчиков, и для AI-агентов — DDD не создаёт. Это осознанное решение Эванса, а не упущение. Но у него есть последствия:
-
-- **Знание заперто в коде** — бизнес-эксперт не может валидировать
-- **Нет передачи без людей** — уходит разработчик, уходит знание «почему»
-- **Нет формальной верификации** — правила домена нигде не зафиксированы отдельно
-- **Масштабирование через людей** — устный UL не масштабируется на много команд
-
-Pack решает эти проблемы, создавая самостоятельный артефакт доменного знания. Ценой — необходимости поддерживать синхронизацию Pack и Code (§6).
+**Most precisely:** "Our approach includes and extends the strategic patterns of DDD, but adds an independent domain knowledge artifact (Pack) that DDD does not create."
 
 ---
 
-## Источники
+## 10. The core problem we are solving
+
+DDD in effect proposes: "let the code be the model." But code is an implementation in a specific language, in a specific framework, with technical compromises. It inevitably mixes domain knowledge with implementation decisions.
+
+A full-fledged domain knowledge artifact — independent of implementation, verifiable, readable by both business and developers and AI agents — DDD does not create. This is Evans's deliberate decision, not an oversight. But it has consequences:
+
+- **Knowledge locked in code** — business expert cannot validate
+- **No transfer without people** — developer leaves, knowledge of "why" leaves with them
+- **No formal verification** — domain rules are nowhere fixed separately
+- **Scaling through people** — oral UL does not scale to many teams
+
+Pack solves these problems by creating an independent domain knowledge artifact. At the cost of needing to maintain Pack and Code synchronization (§6).
+
+---
+
+## Sources
 
 - Evans, Eric. *Domain-Driven Design: Tackling Complexity in the Heart of Software.* 2003.
 - Evans, Eric. *Domain-Driven Design Reference.* 2015. (CC-licensed)
 - Vernon, Vaughn. *Implementing Domain-Driven Design.* 2013.
 - Vernon, Vaughn. *Domain-Driven Design Distilled.* 2016.
 - Fowler, Martin. [BoundedContext](https://martinfowler.com/bliki/BoundedContext.html), [DomainDrivenDesign](https://martinfowler.com/bliki/DomainDrivenDesign.html).
-- FPF-Spec.md, A.1.1 (U.BoundedContext): *«FPF generalizes the proven DDD idea of a Bounded Context from software into a universal modeling primitive.»*
+- FPF-Spec.md, A.1.1 (U.BoundedContext): *"FPF generalizes the proven DDD idea of a Bounded Context from software into a universal modeling primitive."*
 - SPF/docs/fpf-spf-pack.md, §14.1.
