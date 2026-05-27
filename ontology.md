@@ -164,6 +164,33 @@ As in the current version (unchanged).
 
 #### Section 5 (opt.): Cross-Pack links
 
+### 4.4. Competency Questions (CQ)
+
+> Method from ontology engineering: before a Pack is accepted, it must answer 3–5 questions that define its purpose.
+> CQ are not machine-checkable — they are a **Definition of Done** for the Pack author and reviewer.
+
+**Requirement:** Each new Pack (created after the adoption of this section) must contain 3–5 Competency Questions in its `00-pack-manifest.md` under the section `## Competency Questions`.
+
+**Examples of valid CQ:**
+- «Can entity X be both type A and type B at the same time?» — checks disjointness coverage
+- «What work products are produced by applying method M?» — checks completeness of WP coverage
+- «What happens to downstream repositories if concept Y is removed from this Pack?» — checks downstream impact
+- «Which distinctions in this Pack have a test boundary?» — checks operational readiness
+- «What is the fallback chain for a concept not found in this Pack?» — checks inheritance correctness
+
+**Acceptance criteria for CQ:**
+1. Each CQ is answerable from the Pack's ontology.md and 01B-distinctions.md
+2. At least one CQ covers type disjointness (D.* coverage)
+3. At least one CQ covers downstream impact (Pack → DS relationship)
+4. CQ are written in the primary language of the Pack (RU for IWE Packs)
+
+**Migration strategy (soft-gate):**
+- Existing Packs: CQ are **recommended** — linter emits a warning if `00-pack-manifest.md` lacks the `## Competency Questions` section
+- New Packs (created after SPF.SPEC.002 update): CQ are **required** — linter emits an error (non-blocking in CI, blocking in review gate)
+- Existing Packs undergoing significant ontology update: CQ are **required** for new or changed concepts
+
+---
+
 ### 4.3. Downstream requirements
 
 Downstream repositories (code, bots, courses) contain two kinds of concepts:
