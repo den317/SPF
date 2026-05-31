@@ -166,3 +166,64 @@ This process is designed for both human and AI execution.
 | 09 | `06-sota/` files |
 | 10 | `07-map/` files |
 | 11 | Review log, change decisions |
+
+---
+
+## Extension Mechanism
+
+> **Invariant:** SPF and FPF are **read-only upstream** for every Pack. Local customization happens in `PACK-X/pack/X/`, never by editing `SPF/` or `FPF/`. Direct modification of upstream breaks `update.sh` and loses customizations on next upgrade.
+
+### What is upstream
+
+| Layer | Location | Status from a Pack's perspective |
+|-------|----------|----------------------------------|
+| FPF | `~/IWE/FPF/` | Read-only — first principles, meta-ontology |
+| SPF | `~/IWE/SPF/` (this repo) | Read-only — form (`pack-template/`), process (`process/`), specs (`spec/`) |
+| Pack | `PACK-X/pack/X/` | Writable — domain content authored locally |
+
+Reading upstream is unrestricted. Writing to upstream from inside Pack work is forbidden.
+
+### What is extension
+
+An **extension** is a local artefact inside `PACK-X/pack/X/<section>/` that **adds to** or **replaces** an upstream element without modifying upstream. Extensions live in the section of the Pack that mirrors the upstream concept:
+
+| Upstream concept | Local extension location |
+|------------------|--------------------------|
+| `pack-template/01-domain-contract/01B-distinctions.md` (form) | `PACK-X/pack/X/01-domain-contract/01B-distinctions.md` (Pack's own distinctions) |
+| `pack-template/03-methods/_method-card-template.md` (form) | `PACK-X/pack/X/03-methods/<METHOD>.md` (Pack's own methods) |
+| `pack-template/05-failure-modes/` (form) | `PACK-X/pack/X/05-failure-modes/` (Pack's failure modes) |
+| FPF distinction (e.g. A.7: Method ≠ Tool) | Pack-local distinction that refines or specialises the FPF one, with explicit `extends: FPF.A.7` |
+
+The Pack's section is **the** extension point — by construction. There is no separate `*-ext.md` naming convention; the Pack's mirror file **is** the extension of the corresponding upstream form.
+
+### Rules
+
+| Rule | Statement |
+|------|-----------|
+| **R1. Mirror, do not edit** | Add Pack-local content to `PACK-X/pack/X/<section>/`. Never edit `SPF/pack-template/<section>/` or `SPF/process/`. |
+| **R2. Read order** | Upstream is read first (form, process); Pack-local content is read after (domain content). Pack-local content cannot remove upstream constraints — it can only add specialisations within them. |
+| **R3. Explicit reference** | When a Pack entity refines an upstream entity, the Pack file references it explicitly (`extends: FPF.A.7`, `references: SPF.SPEC.005`). Silent override is forbidden. |
+| **R4. Process changes go through SPF spec workflow** | A change to the process itself (steps, lint rules, template structure) is **not** an extension — it is an SPF specification change, handled per `SPF/CLAUDE.md §8.1`, with explicit downstream notification. |
+
+### Anti-pattern
+
+Directly editing `SPF/process/*.md`, `SPF/spec/*.md`, `SPF/pack-template/**`, or `FPF/FPF-Spec.md` from inside Pack work:
+- Local edits are silently overwritten on the next `update.sh` / `git pull` of SPF/FPF, losing the customization.
+- If kept locally via merge conflict resolution, the Pack diverges from upstream and breaks `process-lint.md` validation.
+- Cross-Pack consistency fails: other Packs cannot see the local edit and apply different forms.
+
+The correct response to a felt need to «edit SPF» is one of:
+1. Place the change in the Pack's mirror section (extension — R1).
+2. If the change is structural (affects all Packs), open a separate SPF specification РП per `SPF/CLAUDE.md §8.1`.
+
+### Application by Pack Creator (R30) mode
+
+The Pack Creator role (DP.ROLE.062, DP.SC.048) uses the extension mechanism differently depending on the author's `cp.iwe` stage:
+
+| Mode | Stage | Use of extension mechanism |
+|------|-------|----------------------------|
+| **Assembly** | cp.iwe ≤ 2 | Author copies distinction templates from neighbouring Packs (read-only) into their own `01-domain-contract/01B-distinctions.md`. No upstream touched. |
+| **Hybrid** | cp.iwe = 3 | Author starts from templates, modifies for own domain — writes only in `PACK-X/pack/X/`. |
+| **Full SPF** | cp.iwe ≥ 4 | Author originates own distinctions, writes in `PACK-X/pack/X/`. Upstream still read-only. |
+
+In all three modes, R30 blocks any write attempt to `SPF/` or `FPF/` (logged as `upstream_touch: BLOCKED_WRITE_ATTEMPT`) and redirects to the appropriate Pack section.
