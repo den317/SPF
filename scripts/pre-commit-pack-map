@@ -17,6 +17,20 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")" && pwd)"
 
+# Delta-aware ID-collision guard (WP-388 Ф14, DP.SC.181): блокирует коммит,
+# если staged-added entity-файл вносит уже занятый ID. Dual-path resolution
+# как у generate-map (на macOS readlink -f не работает → SCRIPT_DIR может быть
+# .git/hooks; тогда берём sibling SPF). Не найден → skip (CI-детектор бэкстоп).
+DELTA_GUARD=""
+if [[ -f "$SCRIPT_DIR/check-id-collision-delta.sh" ]]; then
+    DELTA_GUARD="$SCRIPT_DIR/check-id-collision-delta.sh"
+elif [[ -f "$REPO_ROOT/../SPF/scripts/check-id-collision-delta.sh" ]]; then
+    DELTA_GUARD="$REPO_ROOT/../SPF/scripts/check-id-collision-delta.sh"
+fi
+if [[ -n "$DELTA_GUARD" ]]; then
+    bash "$DELTA_GUARD" || exit 1
+fi
+
 # Resolve generate-map.py location
 # Priority: 1) same dir as this script, 2) SPF/scripts/ sibling repo
 if [[ -f "$SCRIPT_DIR/generate-map.py" ]]; then

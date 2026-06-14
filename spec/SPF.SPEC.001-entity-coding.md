@@ -81,6 +81,12 @@ All identifiable entities are coded by a single rule:
 4. **Sequence** — numbers are assigned in order of creation
 5. **Gaps are permitted** — `001, 002, 005` is valid (003, 004 may be deprecated)
 
+> **Uniqueness enforcement (WP-388 Ф14, DP.SC.181).** Concurrent agents picking
+> `max+1` independently can collide on the same number. `scripts/check-id-collision-delta.sh`
+> (wired into the `pre-commit-pack-map` hook) blocks any commit whose newly added
+> entity file reuses an existing code, and suggests the next free one. Global
+> `pack-lint.sh` stays a warning; CI `check-pack-collisions.sh` is the backstop.
+
 ---
 
 ## Type codes
