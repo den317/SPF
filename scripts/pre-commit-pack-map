@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# pack-lint (WP-242) — должен идти до exit 0 auto-MAP
-bash "/Users/tserentserenov/IWE/DS-MCP/knowledge-mcp/scripts/pack-lint.sh"
-#
 # Pre-commit hook: auto-regenerate MAP when Pack entities change.
 #
 # Checks if any .md files under pack/ are staged, runs generate-map.py,
@@ -13,6 +10,9 @@ bash "/Users/tserentserenov/IWE/DS-MCP/knowledge-mcp/scripts/pack-lint.sh"
 # Requires: python3, pyyaml
 
 set -euo pipefail
+
+# pack-lint (WP-242) — runs before auto-MAP, after set -e so failures block the commit
+bash "/Users/tserentserenov/IWE/DS-MCP/knowledge-mcp/scripts/pack-lint.sh"
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")" && pwd)"
