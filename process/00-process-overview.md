@@ -207,7 +207,7 @@ The Pack's section is **the** extension point — by construction. There is no s
 
 ### Anti-pattern
 
-Directly editing `SPF/process/*.md`, `SPF/spec/*.md`, `SPF/pack-template/**`, or `FPF/FPF-Spec.md` from inside Pack work:
+Directly editing `SPF/process/*.md`, `SPF/spec/*.md`, `SPF/pack-template/**`, or `FPF/FPF-Spec.txt` from inside Pack work:
 - Local edits are silently overwritten on the next `update.sh` / `git pull` of SPF/FPF, losing the customization.
 - If kept locally via merge conflict resolution, the Pack diverges from upstream and breaks `process-lint.md` validation.
 - Cross-Pack consistency fails: other Packs cannot see the local edit and apply different forms.

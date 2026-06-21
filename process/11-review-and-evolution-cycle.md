@@ -2,7 +2,7 @@
 
 > **FPF Reference:** B.4 (Canonical Evolution Loop: Run → Observe → Refine → Deploy)
 > Also: B.5 (Reasoning Cycle: Abduction → Deduction → Induction)
-> Full specification: `~/IWE/FPF/FPF-Spec.md`
+> Full specification: `~/IWE/FPF/FPF-Spec.txt`
 
 ## Purpose
 

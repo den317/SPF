@@ -1,6 +1,6 @@
 # FPF, SPF and Pack: Conceptual Model
 
-> **FPF Reference:** The full FPF specification is available locally: `~/IWE/FPF/FPF-Spec.md`
+> **FPF Reference:** The full FPF specification is available locally: `~/IWE/FPF/FPF-Spec.txt`
 > Codes like `A.1`, `B.5` refer to FPF patterns.
 
 This document captures the **conceptual model** of knowledge organization used in this repository.

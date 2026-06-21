@@ -1,7 +1,7 @@
 # 09. SoTA Annotation
 
 > **FPF Reference:** Part G (SoTA Kit), particularly G.2 (SoTA-packs) and G.4 (TraditionCards, OperatorCards)
-> Full specification: `~/IWE/FPF/FPF-Spec.md`
+> Full specification: `~/IWE/FPF/FPF-Spec.txt`
 
 ## Purpose
 

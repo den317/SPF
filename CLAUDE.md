@@ -39,7 +39,11 @@ Pack            →  (downstream pack repositories)
 
 ## 3.1. Working with FPF
 
+<<<<<<< HEAD
 **Local path:** `../FPF/FPF-Spec.md` (4.6 MB, ~50000 lines)
+=======
+**Local path:** `~/IWE/FPF/FPF-Spec.txt` (8.5 MB, ~87000 lines)
+>>>>>>> 226a2ee (docs:)
 
 **When to read FPF while working with SPF:**
 - When clarifying base distinctions (A.7: Role ≠ Method ≠ Work)

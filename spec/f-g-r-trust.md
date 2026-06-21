@@ -1,7 +1,7 @@
 # F-G-R Trust Pattern (Optional)
 
 > **FPF Reference:** B.3 (Trust & Assurance Calculus)
-> Full specification: `~/IWE/FPF/FPF-Spec.md`
+> Full specification: `~/IWE/FPF/FPF-Spec.txt`
 
 ## Overview
 
