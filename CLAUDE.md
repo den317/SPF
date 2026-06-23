@@ -1,6 +1,6 @@
 # CLAUDE.md — SPF (Second Principles Framework)
 
-> **General instructions:** see the workspace-root `CLAUDE.md` (`~/IWE/CLAUDE.md`)
+> **General instructions:** see the workspace-root `CLAUDE.md` (`$IWE_WORKSPACE/CLAUDE.md`)
 >
 > This file contains only specifics of this repository.
 
