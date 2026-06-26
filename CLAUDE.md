@@ -1,6 +1,6 @@
 # CLAUDE.md — SPF (Second Principles Framework)
 
-> **General instructions:** see the workspace-root `CLAUDE.md` (`$IWE_WORKSPACE/CLAUDE.md`)
+> **General instructions:** see `../CLAUDE.md`
 >
 > This file contains only specifics of this repository.
 
@@ -39,7 +39,7 @@ Pack            →  (downstream pack repositories)
 
 ## 3.1. Working with FPF
 
-**Local path:** `$IWE_WORKSPACE/FPF/FPF-Spec.md` (4.6 MB, ~50000 lines)
+**Local path:** `../FPF/FPF-Spec.md` (4.6 MB, ~50000 lines)
 
 **When to read FPF while working with SPF:**
 - When clarifying base distinctions (A.7: Role ≠ Method ≠ Work)
